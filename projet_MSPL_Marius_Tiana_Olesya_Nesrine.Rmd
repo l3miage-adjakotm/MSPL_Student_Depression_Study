@@ -13,7 +13,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 
-```{r echo=FALSE}
+```{r include=FALSE}
 # importation des librairies
 library(tidyverse)
 ```
@@ -95,7 +95,7 @@ Avant de procéder à l'analyse, un nettoyage minutieux du jeu de données a ét
 
 Ces étapes permettent de garantir la robustesse des analyses statistiques ultérieures et d'éviter les biais dus à des erreurs de codage ou à des valeurs aberrantes.
 
-```{r echo=FALSE}
+```{r include=FALSE}
 
 # Importation des données
 data <- read.csv("data_raw/student_depression_dataset.csv")
