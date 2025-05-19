@@ -1,6 +1,6 @@
 ---
 title: "Student Depression Study - L3 MIAGE - 2024-2025"
-author: "Marius Adjakotan, Nesrine Allouche, Tiana Rasolonzatovo, Olesya ..."
+author: "Marius Adjakotan, Nesrine Allouche, Tiana Rasolonzatovo, Olessya Miroshnichenko"
 date: "2025-05-17"
 format:
   pdf:
