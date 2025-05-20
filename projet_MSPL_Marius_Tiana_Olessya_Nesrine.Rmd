@@ -653,6 +653,7 @@ Face à cette complexité, les politiques de prévention devraient viser une mei
 Afin d’explorer plus finement les interactions entre les principaux facteurs de risque, un graphique en tuiles a été réalisé. Il montre le taux moyen de dépression en fonction de deux variables majeures : la durée de sommeil (axe Y) et le niveau de pression académique (axe X), stratifiées par genre (facettes). L’intensité de la couleur reflète la prévalence moyenne de la dépression.
 
 ```{r depression-with-many-factors, echo=FALSE}
+
 # Importation des données
 data <- read.csv("data/student_depression_clean.csv")
 
@@ -666,7 +667,7 @@ data <- data %>%
     )
   )
 
-# Nettoyage et transformation
+# Agrégation
 complex_data <- data %>%
   filter(!is.na(Sleep.Duration),
          !is.na(Academic.Pressure),
@@ -679,19 +680,20 @@ complex_data <- data %>%
 # Graphique
 p <- ggplot(complex_data, aes(x = Academic.Pressure, y = Sleep.Duration, fill = Depression)) +
   geom_tile(color = "grey90") +
-  facet_wrap(~ Gender) +
+  facet_grid(Financial.Stress ~ Gender) +  # ← Ici le stress apparaît visuellement
   scale_fill_gradient(low = "white", high = "red", name = "Dépression") +
   labs(
-    title = "Dépression moyenne selon le sommeil, la pression académique et le stress financier",
+    title = "Dépression selon le sommeil, la pression académique et le stress financier",
+    subtitle = "Facettes : genre (colonnes) et stress financier (lignes)",
     x = "Pression académique",
     y = "Durée de sommeil"
   ) +
-  theme_minimal(base_size = 13) +
+  theme_minimal(base_size = 8) +
   theme(
     plot.title = element_text(face = "bold", size = 8),
-    plot.subtitle = element_text(size = 14),
-    axis.title = element_text(size = 13),
-    strip.text = element_text(face = "bold", size = 6)
+    plot.subtitle = element_text(size = 8),
+    axis.title = element_text(size = 8),
+    strip.text = element_text(face = "bold", size = 8)
   ) +
   guides(fill = guide_colorbar(title.position = "top", title.hjust = 0.5))
 
@@ -702,6 +704,7 @@ ggsave("images/depression-with-many-factors.png", plot = p, width = 8, height = 
 print(p)
 
 ```
+
 
 1.  Observations clés
 
