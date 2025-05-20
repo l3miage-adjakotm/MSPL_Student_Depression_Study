@@ -648,8 +648,80 @@ Ce qui ressort le plus fortement de cette visualisation, c’est la diversité d
 
 Face à cette complexité, les politiques de prévention devraient viser une meilleure écoute des réalités propres à chaque formation, en combinant accompagnement psychologique, pédagogie inclusive, et réduction des inégalités structurelles.
 
+### 8. Analyse croisée : Sommeil, pression académique, stress financier et genre
+
+Afin d’explorer plus finement les interactions entre les principaux facteurs de risque, un graphique en tuiles a été réalisé. Il montre le taux moyen de dépression en fonction de deux variables majeures : la durée de sommeil (axe Y) et le niveau de pression académique (axe X), stratifiées par genre (facettes). L’intensité de la couleur reflète la prévalence moyenne de la dépression.
+
+```{r depression-with-many-factors, echo=FALSE}
+# Importation des données
+data <- read.csv("data/student_depression_clean.csv")
+
+# Conversion de la variable 'Depression' (Oui/Non → 1/0)
+data <- data %>%
+  mutate(
+    Depression = case_when(
+      Depression == "Oui" ~ 1,
+      Depression == "Non" ~ 0,
+      TRUE ~ NA_real_
+    )
+  )
+
+# Nettoyage et transformation
+complex_data <- data %>%
+  filter(!is.na(Sleep.Duration),
+         !is.na(Academic.Pressure),
+         !is.na(Financial.Stress),
+         !is.na(Gender),
+         !is.na(Depression)) %>%
+  group_by(Sleep.Duration, Academic.Pressure, Financial.Stress, Gender) %>%
+  summarise(Depression = mean(Depression, na.rm = TRUE), .groups = "drop")
+
+# Graphique
+p <- ggplot(complex_data, aes(x = Academic.Pressure, y = Sleep.Duration, fill = Depression)) +
+  geom_tile(color = "grey90") +
+  facet_wrap(~ Gender) +
+  scale_fill_gradient(low = "white", high = "red", name = "Dépression") +
+  labs(
+    title = "Dépression moyenne selon le sommeil, la pression académique et le stress financier",
+    x = "Pression académique",
+    y = "Durée de sommeil"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    strip.text = element_text(face = "bold"),
+    plot.title = element_text(face = "bold")
+  ) +
+  guides(fill = guide_colorbar(title.position = "top", title.hjust = 0.5))
+
+# Enregistrement
+ggsave("images/depression-with-many-factors.png", plot = p, width = 8, height = 5)
+
+# Affichage
+print(p)
+
+```
+
+1.  Observations clés
+
+Chez les étudiantes, les taux de dépression atteignent des niveaux élevés (proches de 100 %) dans les combinaisons extrêmes : très peu de sommeil et forte pression académique.
+
+Une durée de sommeil plus longue (\> 8h) semble associée à une moindre dépression, surtout chez les hommes, même sous pression académique modérée.
+
+La progression des couleurs confirme une interaction cumulative : les effets du sommeil et de la pression académique se renforcent.
+
+Le rôle du genre apparaît à travers des profils distincts : les femmes semblent plus affectées par des combinaisons extrêmes.
+
+2.  Interprétation
+
+Ce graphique synthétise l’interaction entre facteurs déjà étudiés séparément dans le rapport. Il illustre bien que la vulnérabilité à la dépression est multifactorielle, avec des effets croisés : *un étudiant dormant peu et subissant une forte pression académique présente un risque accru, qui peut encore être aggravé par un stress financier élevé*.
+
 ## Conclusion
 
 Cette étude montre que la dépression chez les étudiants ne peut être expliquée par un *facteur unique*, mais résulte **d’une combinaison de pressions académiques, financières et personnelles**. Parmi les déterminants les plus puissants identifiés figurent le ***stress financier***, la ***pression académique*** et le ***manque de sommeil***, qui sont tous modifiables et donc ciblables dans des stratégies de prévention. En revanche, des facteurs comme la performance académique (CGPA) n’ont montré aucun lien significatif avec la prévalence de la dépression, ce qui rappelle que la réussite scolaire n’est pas un garant de bien-être psychologique. L’analyse fine par âge, genre et cursus met en lumière des vulnérabilités spécifiques selon le contexte de formation, soulignant l’importance de solutions adaptées à chaque environnement d’étude. Ces résultats appellent à une approche systémique et personnalisée du soutien psychologique en milieu universitaire, combinant accompagnement émotionnel, pédagogie bienveillante et aides matérielles.
 
 ## References
+
+
+1.  <https://www.kaggle.com/datasets/adilshamim8/student-depression-dataset/data>
+
+2.  <https://www.caf.fr/allocataires/vies-de-famille/articles/etudiants-mieux-dormir-pour-reveiller-ses-performances>
