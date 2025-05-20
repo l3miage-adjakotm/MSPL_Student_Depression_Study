@@ -187,6 +187,9 @@ Le sommeil joue un rôle fondamental dans la régulation des émotions, la conce
 
 ```{r sleep-duration, echo=FALSE}
 
+# Importation des données
+data <- read.csv("data/student_depression_clean.csv")
+
 # Calcul du taux moyen de dépression par durée de sommeil
 sleep_dep_rate <- data %>%
   filter(!is.na(Sleep.Duration)) %>%
@@ -240,6 +243,9 @@ Les données suggèrent qu’un sommeil insuffisant (\< 5 h) constitue un facteu
 La pression académique est un facteur déterminant dans la santé mentale des étudiants. En milieu universitaire, les exigences de performance, les échéances multiples et la compétition entre pairs peuvent entraîner une augmentation significative du stress psychologique. L'explosion prolongée du stress psychologique peut être corréler à des symptômes dépressifs. Dans le contexte de ce projet, analyser l’impact de la pression académique sur le taux de dépression permet de comprendre dans quelle mesure le système éducatif contribue à la détérioration du bien-être des étudiants, et peut suggérer des pistes pour des politiques de prévention ou de soutien psychologique dans les établissements d’enseignement supérieur.
 
 ```{r academic-pressure, echo=FALSE}
+
+# Importation des données
+data <- read.csv("data/student_depression_clean.csv")
 
 # Filtrer les données pour enlever la valeur 0
 data_filtered <- data %>%
@@ -298,6 +304,10 @@ Le risque de dépression augmente fortement avec la pression académique : au-de
 La satisfaction vis-à-vis des études reflète l’adéquation entre les attentes de l’étudiant et sa réalité académique. Un faible niveau de satisfaction peut entraîner une démotivation, une perte de sens et un mal-être émotionnel. Ce facteur est donc pertinent pour évaluer son lien potentiel avec l’apparition de la dépression.
 
 ```{r study-satisfaction, echo=FALSE}
+
+# Importation des données
+data <- read.csv("data/student_depression_clean.csv")
+
 # Filtre pour éliminer les valeurs nulles
 data_filtered <- data %>% filter(Study.Satisfaction != 0)
 
@@ -357,13 +367,17 @@ Les *habitudes alimentaires* influencent directement la santé physique et menta
 Ce type de graphique permet de visualiser la proportion de cas de dépression (oui/non) au sein de chaque catégorie d’habitudes alimentaires. Cela rend la comparaison des pourcentages relative plus claire qu’un simple comptage.
 
 ```{r dietary-habits, echo=FALSE}
+
+# Importation des données
+data <- read.csv("data/student_depression_clean.csv")
+
 p <- ggplot(data, aes(x = `Dietary.Habits`,fill = as.factor(Depression))) +
   geom_bar(position = "fill") +
   labs(
     title = "Répartition de la dépression selon les habitudes alimentaires",
     x = "Habitudes alimentaires",
     y = "Proportion",
-    fill = "Dépression (0 = non, 1 = oui)"
+    fill = "Dépression"
   )
 
 # Enregistrement
@@ -409,6 +423,9 @@ Ce graphe suggère un lien fort entre qualité de l’alimentation et prévalenc
 Le stress financier est un facteur connu pour affecter la santé mentale, notamment chez les étudiants, souvent confrontés à des difficultés économiques. Il peut amplifier l’anxiété, réduire la qualité de vie et nuire à la concentration académique. L'analyse de ce facteur permet d’évaluer dans quelle mesure les pressions économiques sont liées à la dépression étudiante.
 
 ```{r financial-stress, echo=FALSE}
+
+# Importation des données
+data <- read.csv("data/student_depression_clean.csv")
 
 # Supprimer les lignes avec valeur manquante dans Financial.Stress
 stress_data <- data %>%
@@ -470,6 +487,10 @@ Le **CGPA (Cumulative Grade Point Average)** est un indicateur direct de perform
 Le boxplot est l’outil idéal pour comparer la distribution d’une variable continue (CGPA) entre deux groupes (dépression : oui/non). Il montre la médiane, les quartiles, les extrêmes et les valeurs aberrantes, ce qui permet d’identifier les tendances centrales et les dispersions éventuelles entre groupes.
 
 ```{r cgpa-distribution, echo=FALSE}
+
+# Importation des données
+data <- read.csv("data/student_depression_clean.csv")
+
 # Création du graphique
 p <- ggplot(data, aes(x = Depression, y = CGPA, fill = Depression)) +
   geom_boxplot(alpha = 0.6) +
@@ -518,8 +539,116 @@ Ce graphique compare la répartition des notes CGPA (sur une échelle 0–10) po
     -   Absence d’écart significatif entre les deux distributions : les étudiants dépressifs et non-dépressifs présentent des CGPA très similaires en termes de médiane et de dispersion.
     -   Performance académique (CGPA) ne semble pas être, dans cette population, un facteur différenciateur majeur de la dépression.
 
-4.  Conclusion provisoire 
+4.  Conclusion provisoire
 
 La distribution du CGPA est très proche entre étudiants dépressifs et non-dépressifs, suggérant que, dans ce jeu de données, la performance académique n’est pas un indicateur principal de la dépression.
 
+### 7. Analyse par âge selon le genre et le niveau d'étude
 
+L’objectif de cette analyse est de mieux comprendre les facteurs sociodémographiques et académiques qui influencent la santé mentale, en particulier les niveaux de dépression chez les étudiants.
+
+En croisant les variables genre, âge, et domaine d’étude, nous cherchons à identifier des tendances spécifiques à certaines sous-populations.
+
+```{r depression-with-gender-age-and-degree, echo=FALSE}
+# Importation des données
+data <- read.csv("data/student_depression_clean.csv")
+
+# Conversion de la variable 'Depression' (Oui/Non → 1/0)
+data <- data %>%
+  mutate(
+    Depression = case_when(
+      Depression == "Oui" ~ 1,
+      Depression == "Non" ~ 0,
+      TRUE ~ NA_real_
+    )
+  )
+
+# Nettoyage et conversion
+data <- data %>%
+  mutate(
+    Age = as.numeric(Age),
+    Depression = as.numeric(Depression),
+    Degree = as.factor(Degree),
+    Gender = as.factor(Gender)
+  )
+
+# Calcul de la moyenne de dépression par âge, genre et degree
+age_gender_degree_data <- data %>%
+  group_by(Gender, Degree, Age) %>%
+  summarise(Depression = mean(Depression, na.rm = TRUE), .groups = "drop") %>%
+  ungroup() %>%
+  mutate(Value = Age)
+
+# Graphique avec facet pour chaque combinaison Gender + Degree
+p <- ggplot(age_gender_degree_data, aes(x = Value, y = Depression, color = Gender)) +
+  geom_line(linewidth = 1.2) +
+  facet_wrap(~ Degree) +
+  labs(
+    title = "Dépression moyenne par âge selon le genre et le niveau d'étude",
+    x = "Âge",
+    y = "Niveau moyen de dépression",
+    color = "Genre"
+  ) +
+  theme_minimal()
+
+# Enregistrement
+ggsave("images/depression_with_degree_gender_age.png", plot = p, width = 8, height = 5)
+
+# Affichage
+print(p)
+
+```
+
+Le graphique présenté illustre la *variation du niveau moyen de dépression en fonction de l’âge, du genre et du niveau d’études.* Chaque petit graphique (facet) correspond à une formation spécifique (ex. B.Tech, MBA, PhD…), avec deux courbes superposées :
+
+-   Une courbe en saumon pour les étudiantes,
+-   Une courbe en turquoise pour les étudiants.
+
+Il permet d'observer :
+
+-   Les différences éventuelles entre les genres dans chaque filière.
+-   Les tendances liées à l’âge : augmentation ou diminution de la dépression avec le temps.
+-   Les variations spécifiques à chaque cursus : certaines formations affichent des niveaux de dépression plus élevés ou des trajectoires plus irrégulières que d’autres.
+
+Cette approche visuelle fine met en évidence la complexité des trajectoires psychologiques étudiantes, et souligne que la dépression ne suit pas une logique unique mais varie fortement selon le contexte académique, l’âge de l’étudiant, et son identité de genre.
+
+**Analyse croisée de la dépression moyenne selon l’âge, le genre et le niveau d’étude**
+
+1.  Des profils contrastés selon les filières
+
+Certaines formations présentent des niveaux de dépression globalement plus élevés, indépendamment du genre. C’est le cas par exemple des cursus comme MBBS, B.Ed, BHM ou B.Sc, où les courbes frôlent ou dépassent régulièrement le seuil de 0.75. Cela peut refléter des contraintes spécifiques à ces filières : *charge de travail intense, contact précoce avec la souffrance (dans le cas des études médicales), ou encore manque de reconnaissance sociale.*
+
+À l'inverse, d’autres formations comme MCA, M.Com, MBA ou PhD affichent des profils plus stables et modérés, avec des courbes qui oscillent souvent entre 0.25 et 0.50. Cela pourrait traduire une meilleure maîtrise des exigences académiques ou un choix d’orientation plus aligné avec les attentes personnelles à ce stade d’études avancées.
+
+2.  Le facteur âge : non linéaire mais structurant
+
+Le lien entre âge et dépression n’est pas linéaire. Dans plusieurs formations, on observe une baisse progressive du niveau de dépression avec l’âge — notamment en B.A., LLB, MBA, MSc ou PhD — suggérant un effet de maturité émotionnelle ou une meilleure adaptation aux défis universitaires avec le temps.
+
+Cependant, certaines filières montrent des rebonds ou des hausses tardives, comme en MBBS, BE ou MCA, où les niveaux de dépression remontent brutalement après 30 ans. Cela peut signaler des phases critiques, comme la reprise d’études, le poids du retard académique ou les dilemmes professionnels.
+
+3.  Les différences de genre : parfois marquées, souvent invisibles
+
+Dans de nombreux cas, les courbes masculine et féminine se superposent ou sont très proches (ex. M.Com, MBA, BCA), suggérant une expérience émotionnelle similaire dans ces cursus.
+
+Mais d’autres filières affichent des écarts nets selon le genre. Par exemple, en MBBS, B.Ed, MD ou M.Ed, les étudiantes semblent plus exposées à la dépression, avec des pics prononcés. Cela renvoie à des dynamiques possibles de charge mentale accrue, discrimination genrée, ou manque de soutien dans des environnements perçus comme stressants ou compétitifs.
+
+Notons que dans certaines filières (comme LLM ou MCA), ce sont au contraire les hommes qui présentent des niveaux plus élevés, ce qui pourrait indiquer une difficulté particulière à exprimer ou gérer la détresse dans ces contextes.
+
+4.  Une complexité multidimensionnelle
+
+Ce qui ressort le plus fortement de cette visualisation, c’est la diversité des trajectoires psychologiques selon les parcours. Le facteur âge interagit avec le genre et le type de formation pour produire des profils très hétérogènes, loin d’une progression uniforme. *Cela renforce l’idée que la santé mentale étudiante ne peut être pensée de manière isolée — elle dépend étroitement du cadre disciplinaire, des attentes sociales, et du capital d’adaptation individuel.*
+
+5.  Conclusion provisoire
+
+    -   Ce graphique met en évidence la nécessité d’une approche personnalisée et différenciée du soutien psychologique en milieu universitaire. Certains cursus cumulent plusieurs facteurs de risque (âge critique, surcharge, attentes sociales), et nécessitent une attention particulière.
+
+    -   Les effets du genre varient selon le contexte : une lecture genrée uniforme serait réductrice.
+
+    -   Le facteur âge semble agir à la fois comme marqueur de fragilité à certains seuils, et comme facteur de résilience avec le temps.
+
+Face à cette complexité, les politiques de prévention devraient viser une meilleure écoute des réalités propres à chaque formation, en combinant accompagnement psychologique, pédagogie inclusive, et réduction des inégalités structurelles.
+
+## Conclusion
+
+
+## References
