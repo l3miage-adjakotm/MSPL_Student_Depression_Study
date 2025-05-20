@@ -688,8 +688,10 @@ p <- ggplot(complex_data, aes(x = Academic.Pressure, y = Sleep.Duration, fill = 
   ) +
   theme_minimal(base_size = 13) +
   theme(
-    strip.text = element_text(face = "bold"),
-    plot.title = element_text(face = "bold")
+    plot.title = element_text(face = "bold", size = 8),
+    plot.subtitle = element_text(size = 14),
+    axis.title = element_text(size = 13),
+    strip.text = element_text(face = "bold", size = 6)
   ) +
   guides(fill = guide_colorbar(title.position = "top", title.hjust = 0.5))
 
