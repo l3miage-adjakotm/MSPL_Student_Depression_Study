@@ -650,5 +650,6 @@ Face à cette complexité, les politiques de prévention devraient viser une mei
 
 ## Conclusion
 
+Cette étude montre que la dépression chez les étudiants ne peut être expliquée par un *facteur unique*, mais résulte **d’une combinaison de pressions académiques, financières et personnelles**. Parmi les déterminants les plus puissants identifiés figurent le ***stress financier***, la ***pression académique*** et le ***manque de sommeil***, qui sont tous modifiables et donc ciblables dans des stratégies de prévention. En revanche, des facteurs comme la performance académique (CGPA) n’ont montré aucun lien significatif avec la prévalence de la dépression, ce qui rappelle que la réussite scolaire n’est pas un garant de bien-être psychologique. L’analyse fine par âge, genre et cursus met en lumière des vulnérabilités spécifiques selon le contexte de formation, soulignant l’importance de solutions adaptées à chaque environnement d’étude. Ces résultats appellent à une approche systémique et personnalisée du soutien psychologique en milieu universitaire, combinant accompagnement émotionnel, pédagogie bienveillante et aides matérielles.
 
 ## References
